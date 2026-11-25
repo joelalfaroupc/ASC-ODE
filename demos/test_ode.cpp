@@ -1,61 +1,83 @@
-#include <iostream>
+#include <cmath>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 #include <numbers>
+#include <stdexcept>
+#include <string>
 
 #include <nonlinfunc.hpp>
 #include <timestepper.hpp>
+#include <ode_models.hpp>
 
 using namespace ASC_ode;
 
-
-class MassSpring : public NonlinearFunction
-{
-private:
-  double mass;
-  double stiffness;
-
-public:
-  MassSpring(double m, double k) : mass(m), stiffness(k) {}
-
-  size_t dimX() const override { return 2; }
-  size_t dimF() const override { return 2; }
-  
-  void evaluate (VectorView<double> x, VectorView<double> f) const override
-  {
-    f(0) = x(1);
-    f(1) = -stiffness/mass*x(0);
-  }
-  
-  void evaluateDeriv (VectorView<double> x, MatrixView<double> df) const override
-  {
-    df = 0.0;
-    df(0,1) = 1;
-    df(1,0) = -stiffness/mass;
-  }
-};
-
-
 int main()
 {
-  double tend = 4*std::numbers::pi;
-  int steps = 100;
-  double tau = tend/steps;
-
-  Vector<> y = { 1, 0 };  // initializer list
+  // m = k = 1 and (x(0), v(0)) = (1, 0): x = cos(t), v = -sin(t).
   auto rhs = std::make_shared<MassSpring>(1.0, 1.0);
-  
-  ExplicitEuler stepper(rhs);
-  // ImplicitEuler stepper(rhs);
+  constexpr double requested_steps[] = {0.4, 0.2, 0.1};
+  const double end_times[] = {4.0 * std::numbers::pi, 40.0 * std::numbers::pi};
 
-  std::ofstream outfile ("output_test_ode.txt");
-  std::cout << 0.0 << "  " << y(0) << " " << y(1) << std::endl;
-  outfile << 0.0 << "  " << y(0) << " " << y(1) << std::endl;
+  std::cout << std::setprecision(8);
+  std::cout << "end_time requested_dt actual_dt method final_error energy_ratio file\n";
 
-  for (int i = 0; i < steps; i++)
+  for (int end_index = 0; end_index < 2; ++end_index)
   {
-     stepper.doStep(tau, y);
+    const double end_time = end_times[end_index];
+    for (int step_index = 0; step_index < 3; ++step_index)
+    {
+      const double requested_dt = requested_steps[step_index];
+      const int steps = static_cast<int>(std::ceil(end_time / requested_dt));
+      const double dt = end_time / steps; // Land exactly on the requested end time.
+      const std::string filename = "massspring_T" + std::to_string(end_index)
+          + "_h" + std::to_string(step_index) + ".csv";
 
-     std::cout << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
-     outfile << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
+      std::ofstream file(filename);
+      if (!file) throw std::runtime_error("Cannot open " + filename);
+      file << std::setprecision(17);
+      file << "t,euler_x,euler_v,improved_x,improved_v,implicit_x,implicit_v,cn_x,cn_v,exact_x,exact_v\n";
+
+      Vector<> euler = {1.0, 0.0};
+      Vector<> improved = {1.0, 0.0};
+      Vector<> implicit = {1.0, 0.0};
+      Vector<> cn = {1.0, 0.0};
+      ExplicitEuler explicit_stepper(rhs);
+      ImprovedEuler midpoint_stepper(rhs);
+      ImplicitEuler implicit_stepper(rhs);
+      CrankNicolson cn_stepper(rhs);
+
+      for (int i = 0; i <= steps; ++i)
+      {
+        const double t = i * dt;
+        file << t << ',' << euler(0) << ',' << euler(1) << ','
+             << improved(0) << ',' << improved(1) << ','
+             << implicit(0) << ',' << implicit(1) << ','
+             << cn(0) << ',' << cn(1) << ','
+             << std::cos(t) << ',' << -std::sin(t) << '\n';
+        if (i < steps)
+        {
+          explicit_stepper.doStep(dt, euler);
+          midpoint_stepper.doStep(dt, improved);
+          implicit_stepper.doStep(dt, implicit);
+          cn_stepper.doStep(dt, cn);
+        }
+      }
+
+      const auto report = [&](const char* method, VectorView<double> y)
+      {
+        const double error = std::hypot(y(0) - std::cos(end_time),
+                                        y(1) + std::sin(end_time));
+        const double energy_ratio = y(0) * y(0) + y(1) * y(1);
+        std::cout << end_time << ' ' << requested_dt << ' ' << dt << ' '
+                  << method << ' ' << error << ' ' << energy_ratio << ' '
+                  << filename << '\n';
+      };
+      report("explicit", euler);
+      report("improved", improved);
+      report("implicit", implicit);
+      report("crank_nicolson", cn);
+    }
   }
 }
