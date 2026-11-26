@@ -1,69 +1,61 @@
-# Welcome to ASC-ODE's documentation!
+# ASC-ODE
 
+ASC-ODE is a C++20 library for solving ordinary differential equations of the
+form `y' = f(y)`. It provides explicit and implicit time-stepping methods and
+example models for a mass–spring oscillator and an RC circuit.
 
-ASC-ODE is a C++ library for solving ordinary differential equations (ODEs).
-The equation is defined by the right hand side function.
-ASC-ODE provides various time-steppers which may be used for odes with right hand sides
-given by a function object.
+## Time-stepping methods
 
-A small demo for solving a mass-spring model as first order ODE
-$$
-\begin{aligned}
-y_0^\prime & = y_1 \\
-y_1^\prime & = -\frac{k}{m} y_0
-\end{aligned}
-$$
-is here:
+The library provides four methods:
 
-```cpp
-double tend = 4*std::numbers::pi;
-int steps = 100;
-double tau = tend/steps;
+- **Explicit Euler**, a first-order explicit method.
+- **Improved Euler**, implemented as the explicit midpoint Runge–Kutta method
+  and therefore second order.
+- **Implicit Euler**, a first-order method whose nonlinear step is solved with
+  Newton's method.
+- **Crank–Nicolson**, implemented as the trapezoidal rule and second order.
+  Its nonlinear step also uses Newton's method.
 
-Vector<> y = { 1, 0 };  // initial conditions
-std::shared_ptr<NonlinearFunction> rhs = std::make_shared<MassSpring>(mass, stiffness);
-  
-ExplicitEuler stepper(rhs);
+The [Euler and model experiments](exercises_euler.md) explain these formulas,
+compare their accuracy and stability, and document the reproduction commands.
 
-std::cout << 0.0 << "  " << y(0) << " " << y(1) << std::endl;
-for (int i = 0; i < steps; i++)
-  {
-     stepper.doStep(tau, y);
-     std::cout << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
-  }
-```    
+## Build and run
 
-The result of this simulation in phase space is shown here:
+The build requires CMake 3.20 or newer, a C++20 compiler, Python, and the
+`pybind11` Python package. The `nanoblas` dependency is a Git submodule.
+From a clone of the repository, initialize the submodule and install
+`pybind11` in the Python environment you will use for CMake:
 
-```{image} pictures/massspring_phase.png
-:width: 50%
-:align: center
+```sh
+git submodule update --init
+python -m pip install pybind11
+cmake -S . -B build -DPython_EXECUTABLE="$(python -c 'import sys; print(sys.executable)')" -DNANOBLAS_BUILD_DEMOS=OFF -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```
 
+On Windows PowerShell, use this CMake configuration command instead of the
+Unix-style command above:
 
+```powershell
+$python = (python -c "import sys; print(sys.executable)")
+cmake -S . -B build "-DPython_EXECUTABLE=$python" -DNANOBLAS_BUILD_DEMOS=OFF -DBUILD_TESTING=ON
+```
 
+The tests use Catch2 3. CMake uses an installed copy if available and otherwise
+downloads the version pinned by the project. See the experiment page for
+commands that run the mass–spring and RC simulations and generate their plots.
 
-## Installation
+## Documentation
 
-install XXX-odesolver via git-clone:
+This book is built with Jupyter Book 2. Follow the README to create and install
+the ignored `.venv` environment, activate it, then start the preview from
+`docs/`:
 
-    git clone https://github.com/my-github-clone/my-ode-solver.git
+```text
+jupyter-book start
+```
 
-
-To configure and build some tests do
-
-    cd my-ode-solver
-    git submodule update --init
-    mkdir build
-    cd build
-    cmake ..
-    make
-    
-
-## Available time-stepping methods are
-...
-
-
-
-
-   
+To build the HTML book locally, run `jupyter-book build --html --strict` from
+`docs/`. The GitHub Actions workflow builds and publishes the book to GitHub
+Pages after pushes to `main`.

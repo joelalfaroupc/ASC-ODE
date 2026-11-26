@@ -1,34 +1,35 @@
-# Ejercicios de Euler explícito e implícito
+# Euler methods and ODE experiments
 
-Implementación de `IntroSC/ODEs/implementation_ee.md` y
-`implementation_ie.md`. La comparación explícita anterior se conserva en
-[exercise_17_2_2.md](exercise_17_2_2.md); ahora se comparan los cuatro métodos.
+This page documents the explicit and implicit Euler implementations based on
+the course exercises, then compares them with Improved Euler and
+Crank–Nicolson. Improved Euler in ASC-ODE is the **explicit midpoint method**,
+not Heun's method.
 
-## Métodos
+## Methods
 
-Para una EDO autónoma `y' = f(y)`, `src/timestepper.hpp` proporciona:
+For an autonomous ODE `y' = f(y)`, `src/timestepper.hpp` implements:
 
-- **ExplicitEuler:** `y_next = y + h*f(y)`.
-- **ImprovedEuler:** punto medio **explícito**, no Heun:
-  `y_mid = y + h/2*f(y)`, `y_next = y + h*f(y_mid)`.
-- **ImplicitEuler:** Newton resuelve `y_next - y - h*f(y_next) = 0`.
-- **CrankNicolson:** Newton resuelve
+- **Explicit Euler:** `y_next = y + h*f(y)`.
+- **Improved Euler (explicit midpoint):**
+  `y_mid = y + h/2*f(y)`, then `y_next = y + h*f(y_mid)`.
+- **Implicit Euler:** Newton's method solves
+  `y_next - y - h*f(y_next) = 0`.
+- **Crank–Nicolson (trapezoidal rule):** Newton's method solves
   `y_next - y - h/2*(f(y) + f(y_next)) = 0`.
-  Es la regla trapezoidal, no el punto medio implícito. Para funciones no
-  lineales esas dos fórmulas son distintas y hay una prueba que lo comprueba.
 
-Los métodos implícitos reutilizan la función compuesta y actualizan sus
-constantes y el parámetro del paso. Usan `y` como aproximación inicial para
-Newton. Improved Euler reutiliza sus vectores auxiliares sin reasignarlos
-en cada paso. No se ha modificado la implementación preexistente de Newton.
+Crank–Nicolson here is the trapezoidal rule, not the implicit midpoint rule.
+The formulas differ for nonlinear functions; the test suite checks this
+distinction. The implicit methods reuse their composed nonlinear functions
+and update their step parameters on each call. Newton starts from the previous
+state.
 
-## Compilar y reproducir
+## Build and reproduce
 
-Desde la raíz de ASC-ODE, con CMake >= 3.20 y compilador C++20:
+From the repository root, with CMake 3.20 or newer and a C++20 compiler:
 
 ```sh
 git submodule update --init
-python3 -m venv build/venv
+python -m venv build/venv
 build/venv/bin/python -m pip install pybind11
 cmake -S . -B build -DPython_EXECUTABLE="$PWD/build/venv/bin/python" -DNANOBLAS_BUILD_DEMOS=OFF -DBUILD_TESTING=ON
 cmake --build build -j 4
@@ -41,154 +42,179 @@ venv/bin/python ../demos/plotmassspring.py
 venv/bin/python ../demos/plotexperiments.py
 ```
 
-Catch2 3 se busca instalado; si no está disponible, CMake descarga la
-versión 3.8.1 fijada por commit. La primera configuración necesita acceso
-a GitHub. `-DBUILD_TESTING=OFF` permite compilar solamente los experimentos.
-Las gráficas usan únicamente la biblioteca estándar de Python, sin matplotlib.
-Todos los resultados quedan en `build/`, excluido de Git.
+On Windows PowerShell, use these equivalent commands from the repository
+root:
 
-## Masa–muelle: tiempo, fase y energía
-
-`src/ode_models.hpp` define el modelo `MassSpring`. Para `m=k=1` y
-`y(0)=(1,0)`, la solución es `(cos(t),-sin(t))` y la energía es
-`E=(x²+v²)/2`.
-
-`test_ode` compara los cuatro métodos con pasos nominales `0.4,0.2,0.1`
-y tiempos finales `4π,40π`. Ajusta cada paso a `T/ceil(T/h)` para llegar
-exactamente a T. Genera seis CSV, doce SVG (tiempo y fase) y un resumen de
-error final y cociente de energía. Cada gráfica incluye la solución exacta;
-los paneles tienen escalas independientes para no ocultar los métodos
-acotados cuando Euler explícito crece mucho.
-
-Con `T=4π` y `h≈0.0997331`, los resultados son:
-
-| Método | Error final | E(T)/E(0) |
-| --- | ---: | ---: |
-| Explícito | 0.867377 | 3.48020 |
-| Mejorado | 0.0208441 | 1.00312 |
-| Implícito | 0.464949 | 0.287339 |
-| Crank–Nicolson | 0.0104006 | 1.00000 |
-
-Euler explícito espirala hacia fuera y gana energía. El mejorado también
-gana energía, pero mucho más lentamente. Euler implícito espirala hacia
-dentro y amortigua un sistema que físicamente no tiene amortiguamiento.
-Crank–Nicolson conserva la energía de este oscilador lineal (salvo redondeo
-y tolerancia de Newton), pero tiene error de fase. A `T=40π` y el paso más
-grande, su error final es aproximadamente `1.454`, aunque su energía sea 1:
-conservar amplitud no equivale a reproducir la fase.
-
-Newton usa tolerancia absoluta de residuo `1e-10`. En las ejecuciones
-implícitas muy amortiguadas el estado puede llegar al suelo de tolerancia;
-no debe interpretarse su diminuta energía final como una medida de
-amortiguamiento exacta hasta precisión arbitraria.
-
-## Orden de convergencia y pruebas Catch2
-
-`convergence` integra hasta `T=2π` con `N=2^4,...,2^12` y calcula
-`e(h)=hypot(y_N(0)-1,y_N(1))` y `p=log2(e(h)/e(h/2))`.
-Produce `convergence.csv`, y `plotexperiments.py` crea `convergence.svg`,
-con ambos ejes logarítmicos, curvas y marcas para cada N.
-
-Resultados medidos para el último refinamiento (`N=2048 → 4096`):
-
-| Método | Error con N=4096 | p |
-| --- | ---: | ---: |
-| explicit | 0.0048307703 | 1.0034776 |
-| improved | 2.4641574e-06 | 1.9999998 |
-| implicit | 0.0048075462 | 0.9965251 |
-| crank_nicolson | 1.2320783e-06 | 1.9999985 |
-
-Los órdenes esperados son 1, 2, 1 y 2. La suite calcula todos los errores
-y comprueba `|p-p_expected| <= 0.1` en **cada** refinamiento cuyo N grueso
-es al menos 512. No se exige ese margen en mallas gruesas fuera del régimen
-asintótico: por ejemplo, el primer cociente explícito da `p≈1.40`, y el
-implícito `p≈0.62`, sin que sus métodos dejen de ser de primer orden.
-
-`tests/test_timestepper.cpp` usa casos plantilla de Catch2. Para un método
-nuevo, añadirlo a las listas de tipos y declarar su `MethodOrder` y fórmula
-de amplificación independiente: así se reutiliza la medición de orden sin
-asignarle por defecto un orden incorrecto. Hay además pruebas de pasos
-variables y cero, reutilización de objetos, fórmula de amplificación,
-Crank–Nicolson no lineal, Jacobiano RC por diferencias finitas y precisión
-RC incluyendo avance del reloj.
-
-## Circuito RC y forma autónoma
-
-Ohm: `U_R=R*I`; condensador: `I=C*U_C'`; Kirchhoff:
-`U_0=U_R+U_C`. Por tanto:
-
-```text
-RC U_C' + U_C = cos(100π t),  U_C(0)=0.
+```powershell
+git submodule update --init
+python -m venv build/venv
+$python = (Resolve-Path build/venv/Scripts/python.exe).Path
+& $python -m pip install pybind11
+cmake -S . -B build "-DPython_EXECUTABLE=$python" -DNANOBLAS_BUILD_DEMOS=OFF -DBUILD_TESTING=ON
+cmake --build build --parallel 4
+ctest --test-dir build --output-on-failure
+Set-Location build
+.\test_ode.exe > massspring_summary.txt
+.\convergence.exe > convergence_summary.txt
+.\test_rc.exe > rc_summary.txt
+.\venv\Scripts\python.exe ..\demos\plotmassspring.py
+.\venv\Scripts\python.exe ..\demos\plotexperiments.py
 ```
 
-Con estado `y=(U_C,s)` y `s(0)=0`, se obtiene la EDO autónoma:
+CMake uses an installed Catch2 3 when available; otherwise it fetches version
+3.8.1 at the commit pinned in `CMakeLists.txt`. The first configure therefore
+needs GitHub access when Catch2 is not installed. Set `-DBUILD_TESTING=OFF`
+to build the experiment programs without the Catch2 test target. The plotting
+scripts use only Python's standard library. Generated data and plots are
+written under `build/`.
+
+## Mass–spring system
+
+`src/ode_models.hpp` defines `MassSpring`. With mass `m = 1`, stiffness
+`k = 1`, and initial state `(x, v) = (1, 0)`, the system is
+`x' = v`, `v' = -x`. Its exact solution is `(cos(t), -sin(t))`, and its energy
+is `E = (x² + v²)/2`.
+
+The `test_ode` program compares all four methods at nominal step sizes
+`0.4`, `0.2`, and `0.1`, and end times `4π` and `40π`. Each step is adjusted
+to land exactly on the requested end time. It writes six CSV data sets,
+twelve SVG plots (time evolution and phase portrait), and a summary of final
+errors and energy ratios. The plots include the exact solution and use
+independent panel scales so rapidly growing explicit Euler results do not
+hide the bounded curves.
+
+For `T = 4π` and `h ≈ 0.0997331`, the measured results are:
+
+| Method | Final error | `E(T)/E(0)` |
+| --- | ---: | ---: |
+| Explicit Euler | 0.867377 | 3.48020 |
+| Improved Euler | 0.0208441 | 1.00312 |
+| Implicit Euler | 0.464949 | 0.287339 |
+| Crank–Nicolson | 0.0104006 | 1.00000 |
+
+Explicit Euler spirals outward and gains energy. Improved Euler also gains
+energy, but more slowly. Implicit Euler spirals inward and damps this
+undamped physical system. Crank–Nicolson preserves the energy of this linear
+oscillator up to round-off and Newton tolerance, but still has phase error.
+At `T = 40π` with the largest step, its final error is about `1.454` even
+though its energy ratio remains 1: preserving amplitude does not guarantee
+phase accuracy.
+
+Newton's method uses an absolute residual tolerance of `1e-10`. In strongly
+damped implicit runs, the state can reach the tolerance floor, so tiny final
+energies should not be interpreted as arbitrarily precise damping
+measurements.
+
+## Convergence order and tests
+
+The `convergence` program integrates to `T = 2π` with
+`N = 2^4, ..., 2^12` steps. It computes
+`e(h) = hypot(y_N(0) - 1, y_N(1))` and the observed order
+`p = log2(e(h)/e(h/2))`. It writes `convergence.csv`; `plotexperiments.py`
+plots the errors on logarithmic axes and marks each value of `N`.
+
+Measured results for the last refinement (`N = 2048 → 4096`):
+
+| Method | Error at `N = 4096` | `p` |
+| --- | ---: | ---: |
+| Explicit Euler | 0.0048307703 | 1.0034776 |
+| Improved Euler | 2.4641574e-06 | 1.9999998 |
+| Implicit Euler | 0.0048075462 | 0.9965251 |
+| Crank–Nicolson | 1.2320783e-06 | 1.9999985 |
+
+The expected orders are 1, 2, 1, and 2, respectively. The Catch2 suite checks
+`|p - p_expected| <= 0.1` at every refinement whose coarser mesh has at least
+512 steps. Coarse meshes are not required to meet this asymptotic-order
+tolerance; the first explicit refinement, for example, gives `p ≈ 1.40`,
+and the first implicit refinement gives `p ≈ 0.62`.
+
+`tests/test_timestepper.cpp` also checks variable and zero step sizes, object
+reuse, amplification formulas, nonlinear Crank–Nicolson behavior, the RC
+Jacobian by finite differences, and RC accuracy including clock advancement.
+When adding a method, add it to the typed test cases and declare its expected
+order and an independently derived amplification formula.
+
+## RC circuit and autonomous formulation
+
+Ohm's law gives `U_R = R*I`, the capacitor relation gives `I = C*U_C'`, and
+Kirchhoff's voltage law gives `U_0 = U_R + U_C`. Therefore,
 
 ```text
-U_C' = (cos(ω s) - U_C)/(RC),  s' = 1,  ω=100π.
+RC U_C' + U_C = cos(100π t),   U_C(0) = 0.
+```
+
+With state `y = (U_C, s)` and `s(0) = 0`, this becomes the autonomous system
+
+```text
+U_C' = (cos(ω s) - U_C)/(RC),   s' = 1,   ω = 100π.
 Jacobian = [[-1/(RC), -ω sin(ω s)/(RC)], [0, 0]].
 ```
 
-`RCCircuit` implementa esa función y su Jacobiano. La referencia exacta es:
+`RCCircuit` implements the system and its Jacobian. Its exact voltage is
 
 ```text
-U_C(t) = [cos(ωt) + ωRC sin(ωt) - exp(-t/(RC))] / [1+(ωRC)²].
+U_C(t) = [cos(ωt) + ωRC sin(ωt) - exp(-t/(RC))] / [1 + (ωRC)²].
 ```
 
-`test_rc` compara **los cuatro métodos** con `(R,C)=(1,1)` y `(100,10^-6)`,
-hasta `T=0.1` (cinco periodos de la fuente), usando pasos
-`0.005,0.001,0.0001,0.00005`. Produce ocho CSV, ocho SVG y un resumen con
-error final, máximo error en los nodos y máxima tensión absoluta. Mostrar
-el error máximo importa: el error final puede ocultar un transitorio mal
-resuelto. Las gráficas tienen escalas independientes y la referencia exacta
-trazada en gris discontinuo.
+`test_rc` compares all four methods for `(R, C) = (1, 1)` and
+`(100, 10^-6)` through `T = 0.1` (five source periods), using steps
+`0.005`, `0.001`, `0.0001`, and `0.00005`. It writes eight CSV files,
+eight SVG plots, and a summary with final error, maximum error at the time
+nodes, and maximum absolute voltage. The maximum error helps reveal a poorly
+resolved transient that a small final error could hide. Plots include the
+exact reference as a dashed gray curve and use independent scales.
 
-Para el circuito rígido con `h=0.001`:
+For the stiff circuit with `h = 0.001`:
 
-| Método | Máximo error en [0,T] | Error final |
+| Method | Maximum error on `[0,T]` | Final error |
 | --- | ---: | ---: |
-| Explícito | 2.66663e95 | 2.66663e95 |
-| Mejorado | 1.90237e161 | 1.90237e161 |
-| Implícito | 0.0951751 | 0.00482466 |
+| Explicit Euler | 2.66663e95 | 2.66663e95 |
+| Improved Euler | 1.90237e161 | 1.90237e161 |
+| Implicit Euler | 0.0951751 | 0.00482466 |
 | Crank–Nicolson | 0.666109 | 1.64321e-5 |
 
-Los métodos explícitos son inestables con los dos pasos grandes en ese
-circuito. Implícito amortigua rápidamente el transitorio. Crank–Nicolson
-queda acotado, pero produce oscilaciones alternantes artificiales cuando
-no se resuelve la escala rápida. Con `h=0.00005`, sus errores máximos son
-respectivamente `0.117948,0.0227482,0.0766265,0.00787167`: reducir el paso
-mejora la resolución del transitorio.
+The two explicit methods are unstable with the two largest steps for this
+circuit. Implicit Euler rapidly damps the transient. Crank–Nicolson remains
+bounded but produces artificial alternating oscillations when the fast scale
+is under-resolved. At `h = 0.00005`, its maximum error is `0.00787167`.
+Reducing the step improves resolution of the transient.
 
-## Explicación mediante funciones de estabilidad
+## Stability functions
 
-Para `y'=λy`, `y_next=R(z)y`, con `z=hλ`:
+For `y' = λy`, a one-step method has the form `y_next = R(z)y`, where
+`z = hλ`:
 
-| Método | R(z) | Orden |
+| Method | `R(z)` | Order |
 | --- | --- | ---: |
-| Explícito | 1+z | 1 |
-| Mejorado | 1+z+z²/2 | 2 |
-| Implícito | 1/(1-z) | 1 |
-| Crank–Nicolson | (1+z/2)/(1-z/2) | 2 |
+| Explicit Euler | `1 + z` | 1 |
+| Improved Euler | `1 + z + z²/2` | 2 |
+| Implicit Euler | `1/(1 - z)` | 1 |
+| Crank–Nicolson | `(1 + z/2)/(1 - z/2)` | 2 |
 
-En el oscilador `λ=±i`:
-`|R_exp(ih)|²=1+h²`, `|R_mej(ih)|²=1+h⁴/4`,
-`|R_imp(ih)|²=1/(1+h²)`, y `|R_CN(ih)|²=1`.
-Estos factores explican directamente los cambios de energía observados.
+For the oscillator, `λ = ±i`:
 
-En RC la componente homogénea tiene `λ=-1/(RC)`. Los dos explícitos
-requieren `0 <= h/(RC) <= 2` para estabilidad absoluta sobre ese eje real;
-para amortiguamiento estricto debe ser `<2`. Es una restricción de
-estabilidad del modo homogéneo, no una garantía de precisión con la fuente
-oscilante. Los implícitos son A-estables, pero **solo Euler implícito es
-L-estable**: cuando `z→-∞`, su R tiende a 0, mientras el de CN tiende a -1.
-Por eso CN puede alternar de signo y amortiguar lentamente modos muy rápidos.
+```text
+|R_exp(ih)|² = 1 + h²
+|R_improved(ih)|² = 1 + h⁴/4
+|R_implicit(ih)|² = 1/(1 + h²)
+|R_CN(ih)|² = 1
+```
 
-- `(R,C)=(1,1)`: constante de tiempo `RC=1 s`, sin modo de decaimiento
-  rápido; la precisión de la fuente (periodo `0.02 s`) domina el paso.
-- `(R,C)=(100,10^-6)`: `RC=10^-4 s`, mucho menor que el periodo de la
-  fuente; es el caso **rígido**. Los explícitos necesitan `h<2·10^-4 s`
-  para amortiguar el modo rápido, incluso si interesa solo la evolución
-  posterior al transitorio.
+These factors explain the energy changes above. For the RC circuit, the
+homogeneous component has `λ = -1/(RC)`. Both explicit methods require
+`0 <= h/(RC) <= 2` for absolute stability on this real mode, and strict
+damping requires `< 2`. This stability condition does not guarantee
+accuracy for the oscillating source. Both implicit methods are A-stable, but
+only implicit Euler is L-stable: as `z → -∞`, its stability function tends
+to 0, while Crank–Nicolson's tends to -1. This explains why Crank–Nicolson
+can alternate in sign and damp very fast modes slowly.
 
-Las curvas comprueban estabilidad y precisión como propiedades distintas:
-un método estable puede ser poco preciso si el paso no resuelve la fuente
-o el transitorio.
+- For `(R, C) = (1, 1)`, the time constant is `RC = 1 s`; there is no fast
+  decay mode, and resolving the source period (`0.02 s`) sets the step size.
+- For `(R, C) = (100, 10^-6)`, `RC = 10^-4 s`, much shorter than the source
+  period. This is the stiff case. Explicit methods need `h < 2·10^-4 s` to
+  damp the fast mode, even when only the later response is of interest.
+
+The experiments illustrate that stability and accuracy are distinct:
+a stable method can still be inaccurate if the step does not resolve the
+source or transient.

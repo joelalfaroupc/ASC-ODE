@@ -1,25 +1,30 @@
 # ASC-ODE
-A package for solving ordinary differential equations
 
-Read the [documentation](https://tuwien-asc.github.io/ASC-ODE/)
+ASC-ODE is a C++20 library for solving ordinary differential equations.
+Read the [documentation](https://tuwien-asc.github.io/ASC-ODE/) for the
+available methods, build instructions, and numerical experiments.
 
-Find theory behind here: https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html
+## Preview the documentation
 
-## Euler exercises
+Create a local Python environment and install Jupyter Book 2. On PowerShell:
 
-See [implemented exercises, reproduction commands and results](docs/exercises_euler.md)
-for explicit/improved/implicit Euler, Crank–Nicolson, Catch2 convergence tests,
-and the autonomous RC circuit.
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -U "jupyter-book>=2"
+cd docs
+..\.venv\Scripts\jupyter-book.exe start
+```
 
-## Documentation
+On macOS or Linux:
 
-The documentation in `docs/` is a [Jupyter Book](https://jupyterbook.org) (version 2).
-To preview it locally:
+```sh
+python -m venv .venv
+.venv/bin/python -m pip install -U "jupyter-book>=2"
+cd docs
+../.venv/bin/jupyter-book start
+```
 
-    pip install "jupyter-book>=2"
-    cd docs
-    jupyter-book start
-
-On every push to `main`, the GitHub workflow `.github/workflows/docs.yml` builds it and publishes
-it on GitHub Pages. Once per repository, set Settings -> Pages -> Source to "GitHub Actions";
-in a fork, also enable workflows in the Actions tab.
+The `.venv/` directory is ignored by Git. The GitHub Actions workflow builds
+and publishes the documentation to GitHub Pages on pushes to `main`. Enable
+GitHub Actions and select **GitHub Actions** as the Pages build source in the
+repository settings.

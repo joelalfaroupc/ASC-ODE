@@ -4,14 +4,21 @@ project:
   title: ASC-ODE
   description: A C++ library for solving ordinary differential equations
   authors:
-    - name: Your Name            # put your names here
-  github: https://github.com/TUWien-ASC/ASC-ODE   # change to your fork
+    - name: Pau Escobar
+      affiliation: TEAM-03
+    - name: Daniel Pastor
+      affiliation: TEAM-03
+    - name: Joel Alfaro
+      affiliation: TEAM-03
+    - name: Mikel Lecumberri
+      affiliation: TEAM-03
+  github: https://github.com/TUWien-ASC/ASC-ODE
   toc:
     - file: intro.md
-    # add more pages of your user manual here, e.g.
-    # - file: timesteppers.md
+    - file: exercises_euler.md
 
 site:
   template: book-theme
   options:
+    favicon: ASC_Logo_transparent_300ppi_RGB.png
     logo: ASC_Logo_transparent_300ppi_RGB.png
