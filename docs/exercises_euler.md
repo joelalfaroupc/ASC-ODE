@@ -23,51 +23,6 @@ distinction. The implicit methods reuse their composed nonlinear functions
 and update their step parameters on each call. Newton starts from the previous
 state.
 
-## Build and reproduce
-
-From the repository root, with CMake 3.20 or newer and a C++20 compiler:
-
-```sh
-git submodule update --init
-python -m venv build/venv
-build/venv/bin/python -m pip install pybind11
-cmake -S . -B build -DPython_EXECUTABLE="$PWD/build/venv/bin/python" -DNANOBLAS_BUILD_DEMOS=OFF -DBUILD_TESTING=ON
-cmake --build build -j 4
-ctest --test-dir build --output-on-failure
-cd build
-./test_ode > massspring_summary.txt
-./convergence > convergence_summary.txt
-./test_rc > rc_summary.txt
-venv/bin/python ../demos/plotmassspring.py
-venv/bin/python ../demos/plotexperiments.py
-```
-
-On Windows PowerShell, use these equivalent commands from the repository
-root:
-
-```powershell
-git submodule update --init
-python -m venv build/venv
-$python = (Resolve-Path build/venv/Scripts/python.exe).Path
-& $python -m pip install pybind11
-cmake -S . -B build "-DPython_EXECUTABLE=$python" -DNANOBLAS_BUILD_DEMOS=OFF -DBUILD_TESTING=ON
-cmake --build build --parallel 4
-ctest --test-dir build --output-on-failure
-Set-Location build
-.\test_ode.exe > massspring_summary.txt
-.\convergence.exe > convergence_summary.txt
-.\test_rc.exe > rc_summary.txt
-.\venv\Scripts\python.exe ..\demos\plotmassspring.py
-.\venv\Scripts\python.exe ..\demos\plotexperiments.py
-```
-
-CMake uses an installed Catch2 3 when available; otherwise it fetches version
-3.8.1 at the commit pinned in `CMakeLists.txt`. The first configure therefore
-needs GitHub access when Catch2 is not installed. Set `-DBUILD_TESTING=OFF`
-to build the experiment programs without the Catch2 test target. The plotting
-scripts use only Python's standard library. Generated data and plots are
-written under `build/`.
-
 ## Mass–spring system
 
 `src/ode_models.hpp` defines `MassSpring`. With mass `m = 1`, stiffness
@@ -75,13 +30,12 @@ written under `build/`.
 `x' = v`, `v' = -x`. Its exact solution is `(cos(t), -sin(t))`, and its energy
 is `E = (x² + v²)/2`.
 
-The `test_ode` program compares all four methods at nominal step sizes
+The mass–spring experiment compares all four methods at nominal step sizes
 `0.4`, `0.2`, and `0.1`, and end times `4π` and `40π`. Each step is adjusted
-to land exactly on the requested end time. It writes six CSV data sets,
-twelve SVG plots (time evolution and phase portrait), and a summary of final
-errors and energy ratios. The plots include the exact solution and use
-independent panel scales so rapidly growing explicit Euler results do not
-hide the bounded curves.
+to land exactly on the requested end time. The recorded results include time
+evolution, phase portraits, final errors, and energy ratios. The plots include
+the exact solution and use independent panel scales so rapidly growing
+explicit Euler results do not hide the bounded curves.
 
 For `T = 4π` and `h ≈ 0.0997331`, the measured results are:
 
@@ -107,11 +61,11 @@ measurements.
 
 ## Convergence order and tests
 
-The `convergence` program integrates to `T = 2π` with
+The convergence study integrates to `T = 2π` with
 `N = 2^4, ..., 2^12` steps. It computes
 `e(h) = hypot(y_N(0) - 1, y_N(1))` and the observed order
-`p = log2(e(h)/e(h/2))`. It writes `convergence.csv`; `plotexperiments.py`
-plots the errors on logarithmic axes and marks each value of `N`.
+`p = log2(e(h)/e(h/2))`. Errors are compared on logarithmic axes across the
+refinements.
 
 Measured results for the last refinement (`N = 2048 → 4096`):
 
@@ -128,7 +82,7 @@ The expected orders are 1, 2, 1, and 2, respectively. The Catch2 suite checks
 tolerance; the first explicit refinement, for example, gives `p ≈ 1.40`,
 and the first implicit refinement gives `p ≈ 0.62`.
 
-`tests/test_timestepper.cpp` also checks variable and zero step sizes, object
+The test suite also checks variable and zero step sizes, object
 reuse, amplification formulas, nonlinear Crank–Nicolson behavior, the RC
 Jacobian by finite differences, and RC accuracy including clock advancement.
 When adding a method, add it to the typed test cases and declare its expected
@@ -156,11 +110,11 @@ Jacobian = [[-1/(RC), -ω sin(ω s)/(RC)], [0, 0]].
 U_C(t) = [cos(ωt) + ωRC sin(ωt) - exp(-t/(RC))] / [1 + (ωRC)²].
 ```
 
-`test_rc` compares all four methods for `(R, C) = (1, 1)` and
+The RC experiment compares all four methods for `(R, C) = (1, 1)` and
 `(100, 10^-6)` through `T = 0.1` (five source periods), using steps
-`0.005`, `0.001`, `0.0001`, and `0.00005`. It writes eight CSV files,
-eight SVG plots, and a summary with final error, maximum error at the time
-nodes, and maximum absolute voltage. The maximum error helps reveal a poorly
+`0.005`, `0.001`, `0.0001`, and `0.00005`. The reported results include final
+error, maximum error at the time nodes, and maximum absolute voltage. The
+maximum error helps reveal a poorly
 resolved transient that a small final error could hide. Plots include the
 exact reference as a dashed gray curve and use independent scales.
 

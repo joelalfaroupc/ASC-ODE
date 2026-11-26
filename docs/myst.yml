@@ -16,6 +16,7 @@ project:
   toc:
     - file: intro.md
     - file: exercises_euler.md
+    - file: publishing.md
 
 site:
   template: book-theme
