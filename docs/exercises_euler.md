@@ -23,6 +23,7 @@ distinction. The implicit methods reuse their composed nonlinear functions
 and update their step parameters on each call. Newton starts from the previous
 state.
 
+(massspring-experiments)=
 ## Mass–spring system
 
 `src/ode_models.hpp` defines `MassSpring`. With mass `m = 1`, stiffness
@@ -59,38 +60,65 @@ damped implicit runs, the state can reach the tolerance floor, so tiny final
 energies should not be interpreted as arbitrarily precise damping
 measurements.
 
-### Time-step comparison, phase portraits and long times
+### Effect of the time step
 
-The following figures are a curated selection, rather than one separate
-plot for every parameter combination. Every numerical curve comes from the
-C++ experiment CSVs. Dashed gray curves show the exact reference; legends
-state the **actual** steps, adjusted to reach the specified end time.
+We first compare the position for three time steps. Smaller steps reduce
+both the amplitude error and the phase error. The explicit methods gain
+energy, while implicit Euler damps the motion. Crank–Nicolson preserves the
+amplitude of this linear oscillator, but its phase still depends on the step.
 
-![Mass–spring position with three different time steps for each method.](pictures/massspring_step_comparison.svg)
+The numerical curves come from the C++ experiment CSVs. Dashed gray curves
+show the exact solution. The legends give the actual time steps, adjusted
+so that the final step reaches the specified end time.
 
-*At `T=4π`, nominal steps `0.4, 0.2, 0.1` show how refinement changes
+```{figure} pictures/massspring_step_comparison.svg
+:label: fig-massspring-step-comparison
+:alt: Mass–spring position with three different time steps for each method.
+:align: center
+
+At `T = 4π`, nominal steps `0.4, 0.2, 0.1` show how refinement changes
 accuracy. Vertical ranges differ between methods so explicit growth does not
-hide the other curves.*
+hide the other curves.
+```
 
-![Phase portraits of all four methods with common axes and equal aspect ratio.](pictures/massspring_phase_comparison.svg)
+### Phase portraits
 
-*At `T=4π` and actual `τ≈0.0997331`, all panels use identical axis ranges
+```{figure} pictures/massspring_phase_comparison.svg
+:label: fig-massspring-phase-comparison
+:alt: Phase portraits of all four methods with common axes and equal aspect ratio.
+:align: center
+
+At `T = 4π` and actual `τ ≈ 0.0997331`, all panels use identical axis ranges
 and equal aspect ratio. The unit circle is the exact solution. Outward and
-inward spirals represent numerical energy gain and damping respectively.*
+inward spirals represent numerical energy gain and damping respectively.
+```
 
-![Long-time mass–spring evolution for all four methods.](pictures/massspring_long_time.svg)
+### Long-time integration
 
-*Increasing the end time to `40π` with nominal `τ=0.4` makes accumulated
-amplitude and phase errors visible. The actual step is `τ≈0.3989324`.
-Each method has its own vertical scale; this is not a common-amplitude plot.*
+```{figure} pictures/massspring_long_time.svg
+:label: fig-massspring-long-time
+:alt: Long-time mass–spring evolution for all four methods.
+:align: center
 
-![Energy evolution for all four methods with three different time steps.](pictures/massspring_energy.svg)
+Increasing the end time to `40π` with nominal `τ=0.4` makes accumulated
+amplitude and phase errors visible. The actual step is `τ ≈ 0.3989324`.
+Each method has its own vertical scale; this is not a common-amplitude plot.
+```
 
-*Energy ratios over `T=40π` distinguish explicit growth, slower midpoint
+### Energy evolution
+
+```{figure} pictures/massspring_energy.svg
+:label: fig-massspring-energy
+:alt: Energy evolution for all four methods with three different time steps.
+:align: center
+
+Energy ratios over `T = 40π` distinguish explicit growth, slower midpoint
 growth, implicit damping and Crank–Nicolson conservation. The two Euler
 panels use logarithmic energy scales. The plateau of the most damped implicit
-run is the Newton tolerance floor, not physical equilibrium.*
+run is the Newton tolerance floor, not physical equilibrium.
+```
 
+(euler-convergence)=
 ## Convergence order and tests
 
 The convergence study integrates to `T = 2π` with
@@ -99,10 +127,14 @@ The convergence study integrates to `T = 2π` with
 `p = log2(e(h)/e(h/2))`. Errors are compared on logarithmic axes across the
 refinements.
 
-![Logarithmic final-state error versus time step for all four methods.](pictures/euler_convergence.svg)
+```{figure} pictures/euler_convergence.svg
+:label: fig-euler-convergence
+:alt: Logarithmic final-state error versus time step for all four methods.
+:align: center
 
-*All nine prescribed grids are shown. The legends give the measured order
-from the final refinement; this study keeps `T=2π` fixed as requested.*
+All nine prescribed grids are shown. The legends give the measured order
+from the final refinement; this study keeps `T = 2π` fixed as requested.
+```
 
 Measured results for the last refinement (`N = 2048 → 4096`):
 
@@ -125,6 +157,7 @@ Jacobian by finite differences, and RC accuracy including clock advancement.
 When adding a method, add it to the typed test cases and declare its expected
 order and an independently derived amplification formula.
 
+(rc-experiments)=
 ## RC circuit and autonomous formulation
 
 Ohm's law gives `U_R = R*I`, the capacitor relation gives `I = C*U_C'`, and
@@ -151,8 +184,7 @@ The RC experiment compares all four methods for `(R, C) = (1, 1)` and
 `(100, 10^-6)` through `T = 0.1` (five source periods), using steps
 `0.005`, `0.001`, `0.0001`, and `0.00005`. The reported results include final
 error, maximum error at the time nodes, and maximum absolute voltage. The
-maximum error helps reveal a poorly
-resolved transient that a small final error could hide. Plots include the
+maximum error helps reveal a poorly resolved transient that a small final error could hide. Plots include the
 exact reference as a dashed gray curve and use independent scales.
 
 For the stiff circuit with `h = 0.001`:
@@ -170,38 +202,60 @@ bounded but produces artificial alternating oscillations when the fast scale
 is under-resolved. At `h = 0.00005`, its maximum error is `0.00787167`.
 Reducing the step improves resolution of the transient.
 
-### RC accuracy, stability and the fast transient
+### Step size in the nonstiff circuit
 
-![RC voltage with three time steps per method for the nonstiff circuit.](pictures/rc_nonstiff_steps.svg)
+```{figure} pictures/rc_nonstiff_steps.svg
+:label: fig-rc-nonstiff-steps
+:alt: RC voltage with three time steps per method for the nonstiff circuit.
+:align: center
 
-*For `R=C=1`, nominal steps `0.005, 0.001, 0.00005` cover coarse to fine
+For `R=C=1`, nominal steps `0.005, 0.001, 0.00005` cover coarse to fine
 resolution of the source period `0.02 s`. The exact voltage is sampled
-densely rather than only at the coarse numerical nodes.*
+densely rather than only at the coarse numerical nodes.
+```
 
-![Maximum nodal error versus step for the stiff RC circuit.](pictures/rc_stiff_stability.svg)
+### Step size in the stiff circuit
 
-*For `R=100, C=10^-6`, all four prescribed steps are shown. Explicit
+```{figure} pictures/rc_stiff_stability.svg
+:label: fig-rc-stiff-stability
+:alt: Maximum nodal error versus step for the stiff RC circuit.
+:align: center
+
+For `R=100, C=10^-6`, all four prescribed steps are shown. Explicit
 methods become unstable beyond the boundary `τ=2RC=0.0002 s` (dashed line).
 The two panels have different logarithmic error scales. Lines connect the
 four measured cases, not a fitted convergence model; the unstable coarse
 errors need not vary monotonically because each run contains a different
 number of growing steps. A coarse grid can also miss the initial transient:
 a smaller nodal maximum for implicit Euler is not necessarily better
-continuous-time accuracy.*
+continuous-time accuracy.
+```
 
-![Zoom of the first millisecond of the stiff RC response.](pictures/rc_stiff_transient.svg)
+### Resolving the fast transient
 
-*The window `0≤t≤0.001 s` covers ten RC time constants and reveals a
+```{figure} pictures/rc_stiff_transient.svg
+:label: fig-rc-stiff-transient
+:alt: Zoom of the first millisecond of the stiff RC response.
+:align: center
+
+The window `0≤t≤0.001 s` covers ten RC time constants and reveals a
 transient compressed in the full `0.1 s` plot. Steps `0.0001` and `0.00005`
 are compared on identical voltage axes. Dots mark actual C++ time nodes;
-only the analytic reference is sampled more densely.*
+only the analytic reference is sampled more densely.
+```
 
-![Implicit Euler and Crank–Nicolson with a coarse but stable step.](pictures/rc_stiff_coarse_step.svg)
+### Coarse steps with implicit methods
 
-*With `τ=0.001 s=10RC`, both implicit methods are stable, but
+```{figure} pictures/rc_stiff_coarse_step.svg
+:label: fig-rc-stiff-coarse-step
+:alt: Implicit Euler and Crank–Nicolson with a coarse but stable step.
+:align: center
+
+With `τ=0.001 s=10RC`, both implicit methods are stable, but
 Crank–Nicolson alternates around the fast transient. Showing the first source
 period (`0.02 s`) makes that oscillation visible instead of relying only on
-the small error at the final time.*
+the small error at the final time.
+```
 
 ## Reproducing the published figures
 
@@ -225,6 +279,7 @@ The mass–spring comparison already includes two end times differing by a
 factor of ten, as requested. RC time-window zooms reuse the same solutions;
 no additional RC end time is needed to satisfy the exercises.
 
+(euler-stability)=
 ## Stability functions
 
 For `y' = λy`, a one-step method has the form `y_next = R(z)y`, where
