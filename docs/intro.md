@@ -18,6 +18,3 @@ The library provides four methods:
 
 The [Euler and model experiments](exercises_euler.md) explain these formulas,
 and compare their accuracy and stability.
-
-The book's [publishing guide](publishing.md) describes how the documentation
-is deployed to GitHub Pages.
