@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="580" viewBox="0 0 1240 580" role="img">
+<title>Stiff RC circuit: stability versus accuracy</title>
+<desc>R=100, C=10⁻⁶, T=0.1 s. Maximum error over all nodes; different y scales in the two panels.</desc>
+<rect width="100%" height="100%" fill="white"/>
+<text x="620.00" y="35.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" fill="#273140">Stiff RC circuit: stability versus accuracy</text>
+<text x="620.00" y="65.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#273140">R=100, C=10⁻⁶, T=0.1 s. Maximum error over all nodes; different y scales in the two panels.</text>
+<text x="320.00" y="112.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#273140">Explicit methods</text>
+<defs><clipPath id="panel-0"><rect x="110.0" y="135" width="480.0" height="310"/></clipPath></defs>
+<path d="M 110.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="110.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-5</text>
+<path d="M 270.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="270.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-4</text>
+<path d="M 430.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="430.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-3</text>
+<path d="M 590.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="590.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-2</text>
+<path d="M 110.00 445.00 H 590.00" stroke="#e4e8ec"/>
+<text x="101.00" y="449.00" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-2</text>
+<path d="M 110.00 382.62 H 590.00" stroke="#e4e8ec"/>
+<text x="101.00" y="386.62" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e31</text>
+<path d="M 110.00 320.24 H 590.00" stroke="#e4e8ec"/>
+<text x="101.00" y="324.24" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e64</text>
+<path d="M 110.00 257.87 H 590.00" stroke="#e4e8ec"/>
+<text x="101.00" y="261.87" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e97</text>
+<path d="M 110.00 195.49 H 590.00" stroke="#e4e8ec"/>
+<text x="101.00" y="199.49" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e130</text>
+<path d="M 110.00 135.00 H 590.00" stroke="#e4e8ec"/>
+<text x="101.00" y="139.00" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e162</text>
+<rect x="110.0" y="135" width="480.0" height="310" fill="none" stroke="#8b959f"/>
+<text x="350.00" y="486.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#273140">Time step τ [s] (log scale)</text>
+<text transform="translate(45.00,290.00) rotate(-90)" text-anchor="middle" font-family="Arial,sans-serif" font-size="14">Maximum nodal error [V] (log scale)</text>
+<g clip-path="url(#panel-0)">
+<polyline points="221.84,442.97 270.00,442.04 430.00,260.84 541.84,377.31" fill="none" stroke="#2366bd" stroke-width="2"/>
+<circle cx="221.84" cy="442.97" r="2.7" fill="#2366bd"/>
+<circle cx="270.00" cy="442.04" r="2.7" fill="#2366bd"/>
+<circle cx="430.00" cy="260.84" r="2.7" fill="#2366bd"/>
+<circle cx="541.84" cy="377.31" r="2.7" fill="#2366bd"/>
+<polyline points="221.84,444.33 270.00,442.88 430.00,136.36 541.84,324.79" fill="none" stroke="#d35c35" stroke-width="2"/>
+<circle cx="221.84" cy="444.33" r="2.7" fill="#d35c35"/>
+<circle cx="270.00" cy="442.88" r="2.7" fill="#d35c35"/>
+<circle cx="430.00" cy="136.36" r="2.7" fill="#d35c35"/>
+<circle cx="541.84" cy="324.79" r="2.7" fill="#d35c35"/>
+<polyline points="318.16,444.33 318.16,136.36" fill="none" stroke="#626b75" stroke-width="2" stroke-dasharray="6 4"/>
+</g>
+<path d="M 95.0 498 h 24" stroke="#2366bd" stroke-width="2"/>
+<text x="126.00" y="502.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Explicit Euler</text>
+<path d="M 335.0 498 h 24" stroke="#d35c35" stroke-width="2"/>
+<text x="366.00" y="502.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Improved Euler</text>
+<path d="M 95.0 521 h 24" stroke="#626b75" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="126.00" y="525.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Explicit boundary τ=2RC</text>
+<text x="920.00" y="112.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#273140">Implicit methods</text>
+<defs><clipPath id="panel-1"><rect x="710.0" y="135" width="480.0" height="310"/></clipPath></defs>
+<path d="M 710.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="710.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-5</text>
+<path d="M 870.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="870.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-4</text>
+<path d="M 1030.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="1030.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-3</text>
+<path d="M 1190.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="1190.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-2</text>
+<path d="M 710.00 445.00 H 1190.00" stroke="#e4e8ec"/>
+<text x="701.00" y="449.00" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-3</text>
+<path d="M 710.00 341.67 H 1190.00" stroke="#e4e8ec"/>
+<text x="701.00" y="345.67" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-2</text>
+<path d="M 710.00 238.33 H 1190.00" stroke="#e4e8ec"/>
+<text x="701.00" y="242.33" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-1</text>
+<path d="M 710.00 135.00 H 1190.00" stroke="#e4e8ec"/>
+<text x="701.00" y="139.00" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e0</text>
+<rect x="710.0" y="135" width="480.0" height="310" fill="none" stroke="#8b959f"/>
+<text x="950.00" y="486.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#273140">Time step τ [s] (log scale)</text>
+<text transform="translate(645.00,290.00) rotate(-90)" text-anchor="middle" font-family="Arial,sans-serif" font-size="14">Maximum nodal error [V] (log scale)</text>
+<g clip-path="url(#panel-1)">
+<polyline points="821.84,250.28 870.00,225.79 1030.00,240.55 1141.84,290.34" fill="none" stroke="#368752" stroke-width="2"/>
+<circle cx="821.84" cy="250.28" r="2.7" fill="#368752"/>
+<circle cx="870.00" cy="225.79" r="2.7" fill="#368752"/>
+<circle cx="1030.00" cy="240.55" r="2.7" fill="#368752"/>
+<circle cx="1141.84" cy="290.34" r="2.7" fill="#368752"/>
+<polyline points="821.84,352.41 870.00,286.08 1030.00,153.23 1141.84,138.25" fill="none" stroke="#9656ac" stroke-width="2"/>
+<circle cx="821.84" cy="352.41" r="2.7" fill="#9656ac"/>
+<circle cx="870.00" cy="286.08" r="2.7" fill="#9656ac"/>
+<circle cx="1030.00" cy="153.23" r="2.7" fill="#9656ac"/>
+<circle cx="1141.84" cy="138.25" r="2.7" fill="#9656ac"/>
+<polyline points="918.16,352.41 918.16,138.25" fill="none" stroke="#626b75" stroke-width="2" stroke-dasharray="6 4"/>
+</g>
+<path d="M 695.0 498 h 24" stroke="#368752" stroke-width="2"/>
+<text x="726.00" y="502.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Implicit Euler</text>
+<path d="M 935.0 498 h 24" stroke="#9656ac" stroke-width="2"/>
+<text x="966.00" y="502.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Crank–Nicolson</text>
+<path d="M 695.0 521 h 24" stroke="#626b75" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="726.00" y="525.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Explicit boundary τ=2RC</text>
+</svg>

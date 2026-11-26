@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="580" viewBox="0 0 980 580" role="img">
+<title>Mass–spring: measured convergence order</title>
+<desc>T=2π, N=16,…,4096. Legends give p from the last refinement (2048 → 4096).</desc>
+<rect width="100%" height="100%" fill="white"/>
+<text x="490.00" y="35.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" fill="#273140">Mass–spring: measured convergence order</text>
+<text x="490.00" y="65.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#273140">T=2π, N=16,…,4096. Legends give p from the last refinement (2048 → 4096).</text>
+<text x="490.00" y="112.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#273140">All four methods</text>
+<defs><clipPath id="panel-0"><rect x="110.0" y="135" width="820.0" height="310"/></clipPath></defs>
+<path d="M 110.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="110.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-3</text>
+<path d="M 383.33 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="383.33" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-2</text>
+<path d="M 656.67 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="656.67" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-1</text>
+<path d="M 930.00 135.00 V 445.00" stroke="#e4e8ec"/>
+<text x="930.00" y="464.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e0</text>
+<path d="M 110.00 445.00 H 930.00" stroke="#e4e8ec"/>
+<text x="101.00" y="449.00" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-6</text>
+<path d="M 110.00 356.43 H 930.00" stroke="#e4e8ec"/>
+<text x="101.00" y="360.43" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-4</text>
+<path d="M 110.00 267.86 H 930.00" stroke="#e4e8ec"/>
+<text x="101.00" y="271.86" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e-2</text>
+<path d="M 110.00 179.29 H 930.00" stroke="#e4e8ec"/>
+<text x="101.00" y="183.29" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e0</text>
+<path d="M 110.00 135.00 H 930.00" stroke="#e4e8ec"/>
+<text x="101.00" y="139.00" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#273140">1e1</text>
+<rect x="110.0" y="135" width="820.0" height="310" fill="none" stroke="#8b959f"/>
+<text x="520.00" y="486.00" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#273140">Time step τ (log scale)</text>
+<text transform="translate(45.00,290.00) rotate(-90)" text-anchor="middle" font-family="Arial,sans-serif" font-size="14">Final Euclidean error (log scale)</text>
+<g clip-path="url(#panel-0)">
+<polyline points="819.04,164.01 736.76,182.67 654.48,198.93 572.20,213.75 489.92,227.83 407.64,241.53 325.35,255.05 243.07,268.47 160.79,281.85" fill="none" stroke="#2366bd" stroke-width="2"/>
+<circle cx="819.04" cy="164.01" r="2.7" fill="#2366bd"/>
+<circle cx="736.76" cy="182.67" r="2.7" fill="#2366bd"/>
+<circle cx="654.48" cy="198.93" r="2.7" fill="#2366bd"/>
+<circle cx="572.20" cy="213.75" r="2.7" fill="#2366bd"/>
+<circle cx="489.92" cy="227.83" r="2.7" fill="#2366bd"/>
+<circle cx="407.64" cy="241.53" r="2.7" fill="#2366bd"/>
+<circle cx="325.35" cy="255.05" r="2.7" fill="#2366bd"/>
+<circle cx="243.07" cy="268.47" r="2.7" fill="#2366bd"/>
+<circle cx="160.79" cy="281.85" r="2.7" fill="#2366bd"/>
+<polyline points="819.04,214.00 736.76,240.98 654.48,267.68 572.20,294.34 489.92,321.00 407.64,347.67 325.35,374.33 243.07,400.99 160.79,427.65" fill="none" stroke="#d35c35" stroke-width="2"/>
+<circle cx="819.04" cy="214.00" r="2.7" fill="#d35c35"/>
+<circle cx="736.76" cy="240.98" r="2.7" fill="#d35c35"/>
+<circle cx="654.48" cy="267.68" r="2.7" fill="#d35c35"/>
+<circle cx="572.20" cy="294.34" r="2.7" fill="#d35c35"/>
+<circle cx="489.92" cy="321.00" r="2.7" fill="#d35c35"/>
+<circle cx="407.64" cy="347.67" r="2.7" fill="#d35c35"/>
+<circle cx="325.35" cy="374.33" r="2.7" fill="#d35c35"/>
+<circle cx="243.07" cy="400.99" r="2.7" fill="#d35c35"/>
+<circle cx="160.79" cy="427.65" r="2.7" fill="#d35c35"/>
+<polyline points="819.04,186.08 736.76,194.31 654.48,204.84 572.20,216.72 489.92,229.31 407.64,242.27 325.35,255.42 243.07,268.66 160.79,281.94" fill="none" stroke="#368752" stroke-width="2"/>
+<circle cx="819.04" cy="186.08" r="2.7" fill="#368752"/>
+<circle cx="736.76" cy="194.31" r="2.7" fill="#368752"/>
+<circle cx="654.48" cy="204.84" r="2.7" fill="#368752"/>
+<circle cx="572.20" cy="216.72" r="2.7" fill="#368752"/>
+<circle cx="489.92" cy="229.31" r="2.7" fill="#368752"/>
+<circle cx="407.64" cy="242.27" r="2.7" fill="#368752"/>
+<circle cx="325.35" cy="255.42" r="2.7" fill="#368752"/>
+<circle cx="243.07" cy="268.66" r="2.7" fill="#368752"/>
+<circle cx="160.79" cy="281.94" r="2.7" fill="#368752"/>
+<polyline points="819.04,228.13 736.76,254.46 654.48,281.04 572.20,307.68 489.92,334.34 407.64,361.00 325.35,387.66 243.07,414.32 160.79,440.99" fill="none" stroke="#9656ac" stroke-width="2"/>
+<circle cx="819.04" cy="228.13" r="2.7" fill="#9656ac"/>
+<circle cx="736.76" cy="254.46" r="2.7" fill="#9656ac"/>
+<circle cx="654.48" cy="281.04" r="2.7" fill="#9656ac"/>
+<circle cx="572.20" cy="307.68" r="2.7" fill="#9656ac"/>
+<circle cx="489.92" cy="334.34" r="2.7" fill="#9656ac"/>
+<circle cx="407.64" cy="361.00" r="2.7" fill="#9656ac"/>
+<circle cx="325.35" cy="387.66" r="2.7" fill="#9656ac"/>
+<circle cx="243.07" cy="414.32" r="2.7" fill="#9656ac"/>
+<circle cx="160.79" cy="440.99" r="2.7" fill="#9656ac"/>
+</g>
+<path d="M 95.0 498 h 24" stroke="#2366bd" stroke-width="2"/>
+<text x="126.00" y="502.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Explicit Euler: p=1.0035</text>
+<path d="M 505.0 498 h 24" stroke="#d35c35" stroke-width="2"/>
+<text x="536.00" y="502.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Improved Euler: p=2.0000</text>
+<path d="M 95.0 521 h 24" stroke="#368752" stroke-width="2"/>
+<text x="126.00" y="525.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Implicit Euler: p=0.9965</text>
+<path d="M 505.0 521 h 24" stroke="#9656ac" stroke-width="2"/>
+<text x="536.00" y="525.00" text-anchor="start" font-family="Arial,sans-serif" font-size="13" fill="#273140">Crank–Nicolson: p=2.0000</text>
+</svg>

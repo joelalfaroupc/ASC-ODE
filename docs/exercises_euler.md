@@ -59,6 +59,38 @@ damped implicit runs, the state can reach the tolerance floor, so tiny final
 energies should not be interpreted as arbitrarily precise damping
 measurements.
 
+### Time-step comparison, phase portraits and long times
+
+The following figures are a curated selection, rather than one separate
+plot for every parameter combination. Every numerical curve comes from the
+C++ experiment CSVs. Dashed gray curves show the exact reference; legends
+state the **actual** steps, adjusted to reach the specified end time.
+
+![Mass–spring position with three different time steps for each method.](pictures/massspring_step_comparison.svg)
+
+*At `T=4π`, nominal steps `0.4, 0.2, 0.1` show how refinement changes
+accuracy. Vertical ranges differ between methods so explicit growth does not
+hide the other curves.*
+
+![Phase portraits of all four methods with common axes and equal aspect ratio.](pictures/massspring_phase_comparison.svg)
+
+*At `T=4π` and actual `τ≈0.0997331`, all panels use identical axis ranges
+and equal aspect ratio. The unit circle is the exact solution. Outward and
+inward spirals represent numerical energy gain and damping respectively.*
+
+![Long-time mass–spring evolution for all four methods.](pictures/massspring_long_time.svg)
+
+*Increasing the end time to `40π` with nominal `τ=0.4` makes accumulated
+amplitude and phase errors visible. The actual step is `τ≈0.3989324`.
+Each method has its own vertical scale; this is not a common-amplitude plot.*
+
+![Energy evolution for all four methods with three different time steps.](pictures/massspring_energy.svg)
+
+*Energy ratios over `T=40π` distinguish explicit growth, slower midpoint
+growth, implicit damping and Crank–Nicolson conservation. The two Euler
+panels use logarithmic energy scales. The plateau of the most damped implicit
+run is the Newton tolerance floor, not physical equilibrium.*
+
 ## Convergence order and tests
 
 The convergence study integrates to `T = 2π` with
@@ -66,6 +98,11 @@ The convergence study integrates to `T = 2π` with
 `e(h) = hypot(y_N(0) - 1, y_N(1))` and the observed order
 `p = log2(e(h)/e(h/2))`. Errors are compared on logarithmic axes across the
 refinements.
+
+![Logarithmic final-state error versus time step for all four methods.](pictures/euler_convergence.svg)
+
+*All nine prescribed grids are shown. The legends give the measured order
+from the final refinement; this study keeps `T=2π` fixed as requested.*
 
 Measured results for the last refinement (`N = 2048 → 4096`):
 
@@ -132,6 +169,61 @@ circuit. Implicit Euler rapidly damps the transient. Crank–Nicolson remains
 bounded but produces artificial alternating oscillations when the fast scale
 is under-resolved. At `h = 0.00005`, its maximum error is `0.00787167`.
 Reducing the step improves resolution of the transient.
+
+### RC accuracy, stability and the fast transient
+
+![RC voltage with three time steps per method for the nonstiff circuit.](pictures/rc_nonstiff_steps.svg)
+
+*For `R=C=1`, nominal steps `0.005, 0.001, 0.00005` cover coarse to fine
+resolution of the source period `0.02 s`. The exact voltage is sampled
+densely rather than only at the coarse numerical nodes.*
+
+![Maximum nodal error versus step for the stiff RC circuit.](pictures/rc_stiff_stability.svg)
+
+*For `R=100, C=10^-6`, all four prescribed steps are shown. Explicit
+methods become unstable beyond the boundary `τ=2RC=0.0002 s` (dashed line).
+The two panels have different logarithmic error scales. Lines connect the
+four measured cases, not a fitted convergence model; the unstable coarse
+errors need not vary monotonically because each run contains a different
+number of growing steps. A coarse grid can also miss the initial transient:
+a smaller nodal maximum for implicit Euler is not necessarily better
+continuous-time accuracy.*
+
+![Zoom of the first millisecond of the stiff RC response.](pictures/rc_stiff_transient.svg)
+
+*The window `0≤t≤0.001 s` covers ten RC time constants and reveals a
+transient compressed in the full `0.1 s` plot. Steps `0.0001` and `0.00005`
+are compared on identical voltage axes. Dots mark actual C++ time nodes;
+only the analytic reference is sampled more densely.*
+
+![Implicit Euler and Crank–Nicolson with a coarse but stable step.](pictures/rc_stiff_coarse_step.svg)
+
+*With `τ=0.001 s=10RC`, both implicit methods are stable, but
+Crank–Nicolson alternates around the fast transient. Showing the first source
+period (`0.02 s`) makes that oscillation visible instead of relying only on
+the small error at the final time.*
+
+## Reproducing the published figures
+
+From the ASC-ODE repository root, first configure and build the C++ targets
+with CMake and the existing `nanoblas`/`pybind11` prerequisites. Then run:
+
+```sh
+(cd build && ./test_ode > massspring_summary.txt && ./convergence > convergence_summary.txt && ./test_rc > rc_summary.txt)
+python3 demos/plotreport.py --data-dir build --output-dir docs/pictures
+python3 -B -m unittest discover -s tests -p 'test_plotreport.py'
+```
+
+`plotreport.py` uses only Python's standard library and writes the nine SVGs
+embedded above. It reads the generated CSVs without re-integrating an ODE
+or adding synthetic numerical samples. Full data and per-run plots can stay
+in the ignored `build/` directory; the selected SVGs in `docs/pictures/`
+are small, versionable assets for GitHub and the documentation site. The
+original plotting scripts remain available for the full set of per-run plots.
+
+The mass–spring comparison already includes two end times differing by a
+factor of ten, as requested. RC time-window zooms reuse the same solutions;
+no additional RC end time is needed to satisfy the exercises.
 
 ## Stability functions
 
